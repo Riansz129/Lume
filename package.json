@@ -1,6 +1,6 @@
 {
   "name": "lume-desktop",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "private": true,
   "description": "Companheiro de desktop para Windows",
   "author": "Projeto Lume",
@@ -8,7 +8,7 @@
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder --win nsis --x64 --publish never",
-    "test": "node --test tests/ai.test.js tests/local-tools.test.js"
+    "test": "node --test tests/ai.test.js tests/local-tools.test.js tests/reminder-parser.test.js"
   },
   "devDependencies": {
     "electron": "33.4.11",
@@ -25,7 +25,8 @@
       "style.css",
       "app.js",
       "ai-errors.js",
-      "local-tools.js"
+      "local-tools.js",
+      "reminder-parser.js"
     ],
     "win": {
       "target": "nsis"
