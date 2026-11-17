@@ -19,6 +19,7 @@ ipcMain.handle('external', (_, url) => { if (['https://open.spotify.com/', 'http
 
 const fs = require('fs');
 const { aiErrorMessage } = require('./ai-errors');
+const localTools = require('./local-tools');
 const { safeStorage } = require('electron');
 const endpoints = {openai:'https://api.openai.com/v1/chat/completions',groq:'https://api.groq.com/openai/v1/chat/completions',gemini:'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',anthropic:'https://api.anthropic.com/v1/messages'};
 const keyPath = () => path.join(app.getPath('userData'),'ai-keys.json');
@@ -27,8 +28,9 @@ function readKeys(){try{return JSON.parse(fs.readFileSync(keyPath(),'utf8'))}cat
 ipcMain.handle('key-status',(_,p)=>{validateProvider(p);return !!readKeys()[p]});
 ipcMain.handle('save-key',(_,p,k)=>{validateProvider(p);if(typeof k!=='string'||!k.trim()||k.length>4096)throw new Error('Chave inválida.');if(!safeStorage.isEncryptionAvailable())throw new Error('Proteção de chaves indisponível no Windows.');let keys=readKeys();keys[p]=safeStorage.encryptString(k.trim()).toString('base64');fs.writeFileSync(keyPath(),JSON.stringify(keys),{mode:0o600});return true});
 ipcMain.handle('delete-key',(_,p)=>{validateProvider(p);let keys=readKeys();delete keys[p];fs.writeFileSync(keyPath(),JSON.stringify(keys),{mode:0o600});return true});
+ipcMain.handle('local-tools',()=>localTools.findTools());
 ipcMain.handle('ai-chat',async(_,req)=>{
- const {provider,model,prompt}=req||{};if(typeof model!=='string'||!model.trim()||model.length>100||typeof prompt!=='string'||!prompt.trim()||prompt.length>12000)throw new Error('Informe um modelo e uma mensagem válidos.');
+ const {provider,model,prompt}=req||{};if(provider==='codex'||provider==='claude_cli')return localTools.runCli(provider,prompt,{cwd:app.getPath('temp')});if(typeof model!=='string'||!model.trim()||model.length>100||typeof prompt!=='string'||!prompt.trim()||prompt.length>12000)throw new Error('Informe um modelo e uma mensagem válidos.');
  const system='Você é Lume, um assistente gentil e conciso. Responda em português do Brasil.';
  let url,headers={'Content-Type':'application/json'},body;
  if(provider==='ollama'){url='http://127.0.0.1:11434/api/chat';body={model:model.trim(),stream:false,messages:[{role:'system',content:system},{role:'user',content:prompt}]}}
