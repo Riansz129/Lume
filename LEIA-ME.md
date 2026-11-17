@@ -1,24 +1,21 @@
-# Lume - projeto e gera��o do instalador
+# Lume
 
-O Lume possui configura��o para gerar um instalador Windows x64. O instalador inclui o aplicativo e o Electron, cria atalhos e permite escolher a pasta. Depois de gerado, o usu�rio final n�o precisa instalar Node.js nem executar comandos para usar as fun��es b�sicas.
+Assistente de desktop para Windows com conversa, notas, tarefas, lembretes, foco e contador de água.
 
-## Gerar instalador automaticamente pelo GitHub
+## Instalar
 
-1. Crie um reposit�rio no GitHub e envie o conte�do desta pasta, incluindo a pasta oculta `.github`.
-2. Abra a aba **Actions**, selecione **Gerar instalador Windows** e clique em **Run workflow**. Habilite Actions se for solicitado.
-3. Aguarde a execu��o concluir e baixe o arquivo **Lume-Instalador-Windows** na se��o Artifacts. Extraia o ZIP do GitHub para obter o `Lume-Setup-...exe`.
-4. Abra o instalador, avance nas telas e conclua a instala��o.
+Baixe o artefato da compilação no GitHub Actions, extraia o ZIP e execute o instalador. O instalador não inclui serviços ou modelos de IA. Para desenvolver, execute `npm install`, `npm test` e `npm start`. Gere um instalador com `npm run dist`.
 
-Os artefatos do GitHub Actions t�m prazo de reten��o e podem exigir login para download. Este fluxo n�o publica uma vers�o nem assina digitalmente o instalador. O Windows pode exibir um alerta para aplicativo sem assinatura; para distribui��o ampla � necess�rio testar e assinar o execut�vel.
+## Conversa
 
-## Gerar em seu computador
+Configure Ollama ou uma API em Configurações. O contexto recente é enviado a cada nova pergunta ao provedor e é reiniciado ao trocar de modelo ou provedor; Codex CLI e Claude Code recebem perguntas individuais. O histórico visível só é salvo quando você ativa essa opção; desligá-la remove o histórico salvo. Uma conversa restaurada é somente para consulta, não retomará o contexto da IA automaticamente. A chave de API é armazenada usando proteção do Windows.
 
-Instale o Node.js LTS e execute `npm install` e `npm run dist` nesta pasta. O instalador ser� criado em `dist`.
+## Comandos locais
 
-## IA local
+Exemplos: “crie tarefa ligar para Ana”, “minhas tarefas”, “inicie foco de 15 minutos”, “bebi um copo de água”, “anote: comprar café” e “me lembre de pagar amanhã às 15h”. Digite “ajuda” para ver os comandos. Apenas comandos reconhecidos executam ações; outras mensagens vão para a IA selecionada. As respostas de APIs não são executadas como comandos. Codex CLI e Claude Code usam as permissões próprias desses programas; confira a configuração antes de selecioná-los.
 
-Tarefas, notas e temporizador funcionam sem configurar uma IA. Para conversar com o Lume, � necess�rio instalar e iniciar o Ollama (https://ollama.com/download), baixar um modelo como `llama3.2` e informar o nome em Configura��es. O instalador n�o inclui o Ollama ou modelos de IA. Cada pergunta � enviada separadamente, sem hist�rico.
+Lembretes e temporizador notificam enquanto o Lume estiver aberto. Lembretes vencidos são verificados quando ele é aberto novamente. Sem configuração de IA, comandos locais continuam disponíveis.
 
-O atalho Ctrl+Shift+Espa�o oculta ou mostra o aplicativo. O temporizador s� notifica enquanto o aplicativo est� aberto. Voz, palavra de ativa��o, lembretes agendados, clima e controle de m�sica ainda n�o foram implementados. O bot�o Spotify abre o site.
+## Referências
 
-O instalador n�o foi gerado nem testado neste ambiente, que n�o teve acesso �s depend�ncias necess�rias. Teste em um Windows limpo antes de distribuir. Este projeto � independente e n�o inclui c�digo nem marcas do Kobi.
+A arquitetura foi desenvolvida para este projeto, inspirada em conceitos públicos de assistentes de desktop, incluindo [Zen](https://github.com/Sufiyan-S7/Zen), [Desktop Assistant](https://github.com/neuronection/desktop-assistant) e [OpenDex](https://github.com/wassgha/opendex). Voz, controle por palavra de ativação, Spotify integrado e execução de automações externas não fazem parte desta versão.
