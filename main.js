@@ -15,9 +15,10 @@ ipcMain.on('minimize', () => win.hide());
 ipcMain.on('close', () => app.quit());
 ipcMain.on('resize', (_, expanded) => { const b = win.getBounds(); const h = expanded ? 720 : 86; win.setBounds({ x:b.x, y:b.y, width:440, height:h }); });
 ipcMain.handle('notify', (_, title, body) => { if (Notification.isSupported()) new Notification({title: String(title).slice(0,80), body: String(body).slice(0,200)}).show(); });
-ipcMain.handle('external', (_, url) => { if (['https://open.spotify.com/', 'https://ollama.com/download'].includes(url)) return shell.openExternal(url); });
+ipcMain.handle('external', (_, url) => { if (['https://open.spotify.com/', 'https://ollama.com/download', 'https://console.groq.com/keys'].includes(url)) return shell.openExternal(url); });
 
 const fs = require('fs');
+const { aiErrorMessage } = require('./ai-errors');
 const { safeStorage } = require('electron');
 const endpoints = {openai:'https://api.openai.com/v1/chat/completions',groq:'https://api.groq.com/openai/v1/chat/completions',gemini:'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',anthropic:'https://api.anthropic.com/v1/messages'};
 const keyPath = () => path.join(app.getPath('userData'),'ai-keys.json');
@@ -33,6 +34,6 @@ ipcMain.handle('ai-chat',async(_,req)=>{
  if(provider==='ollama'){url='http://127.0.0.1:11434/api/chat';body={model:model.trim(),stream:false,messages:[{role:'system',content:system},{role:'user',content:prompt}]}}
  else {validateProvider(provider);let encrypted=readKeys()[provider];if(!encrypted)throw new Error('Salve a chave de API nas configurações.');let key;try{key=safeStorage.decryptString(Buffer.from(encrypted,'base64'))}catch{throw new Error('Não foi possível abrir a chave salva; cadastre-a novamente.')}url=endpoints[provider];if(provider==='anthropic'){headers['x-api-key']=key;headers['anthropic-version']='2023-06-01';body={model:model.trim(),max_tokens:1024,system,messages:[{role:'user',content:prompt}]}}else{headers.Authorization='Bearer '+key;body={model:model.trim(),messages:[{role:'system',content:system},{role:'user',content:prompt}]}}}
  let response;try{response=await fetch(url,{method:'POST',headers,body:JSON.stringify(body),signal:AbortSignal.timeout(90000)})}catch{throw new Error(provider==='ollama'?'Verifique se o Ollama está aberto.':'Não foi possível conectar ao serviço de IA.')}
- if(!response.ok){if(response.status===401||response.status===403)throw new Error('Chave inválida ou sem permissão para este serviço.');if(response.status===429)throw new Error('Limite de uso atingido. Confira sua conta e tente novamente.');throw new Error('O serviço retornou erro '+response.status+'. Confira o modelo e as configurações.')}
+ if(!response.ok){let code='';try{const errorBody=await response.json();if(typeof errorBody?.error?.code==='string')code=errorBody.error.code}catch{}throw new Error(aiErrorMessage(provider,response.status,code))}
  const data=await response.json();const answer=provider==='ollama'?data.message?.content:provider==='anthropic'?data.content?.filter(x=>x.type==='text').map(x=>x.text).join('\n'):data.choices?.[0]?.message?.content;if(typeof answer!=='string'||!answer.trim())throw new Error('O serviço não retornou texto.');return answer;
 });
