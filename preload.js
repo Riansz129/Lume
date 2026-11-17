@@ -1,2 +1,2 @@
 const { contextBridge, ipcRenderer } = require('electron');
-contextBridge.exposeInMainWorld('lume', { hide:()=>ipcRenderer.send('minimize'), close:()=>ipcRenderer.send('close'), resize:v=>ipcRenderer.send('resize',v), notify:(t,b)=>ipcRenderer.invoke('notify',t,b), external:u=>ipcRenderer.invoke('external',u) });
+contextBridge.exposeInMainWorld('lume', { hide:()=>ipcRenderer.send('minimize'), close:()=>ipcRenderer.send('close'), resize:v=>ipcRenderer.send('resize',v), notify:(t,b)=>ipcRenderer.invoke('notify',t,b), external:u=>ipcRenderer.invoke('external',u), chat:r=>ipcRenderer.invoke('ai-chat',r), keyStatus:p=>ipcRenderer.invoke('key-status',p), saveKey:(p,k)=>ipcRenderer.invoke('save-key',p,k), deleteKey:p=>ipcRenderer.invoke('delete-key',p) });

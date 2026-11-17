@@ -1,18 +1,32 @@
 {
   "name": "lume-desktop",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Companheiro de desktop para Windows",
   "author": "Projeto Lume",
   "main": "main.js",
-  "scripts": { "start": "electron .", "dist": "electron-builder --win nsis --x64 --publish never" },
-  "devDependencies": { "electron": "33.4.11", "electron-builder": "25.1.8" },
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win nsis --x64 --publish never"
+  },
+  "devDependencies": {
+    "electron": "33.4.11",
+    "electron-builder": "25.1.8"
+  },
   "build": {
     "appId": "digital.lume.desktop",
     "productName": "Lume",
     "artifactName": "Lume-Setup-${version}-${arch}.${ext}",
-    "files": ["main.js", "preload.js", "index.html", "style.css", "app.js"],
-    "win": { "target": "nsis" },
+    "files": [
+      "main.js",
+      "preload.js",
+      "index.html",
+      "style.css",
+      "app.js"
+    ],
+    "win": {
+      "target": "nsis"
+    },
     "nsis": {
       "oneClick": false,
       "perMachine": false,
